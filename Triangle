@@ -1,3 +1,11 @@
+class Triangle {
+public:
+    int a;
+    int b;
+    int c;
+    Triangle(int _a, int _b, int _c) : a(_a), b(_b), c(_c) {}
+};
+
 class Solution {
 public:
     vector<Triangle*> getTriangleSides(vector<int>& segments) {
