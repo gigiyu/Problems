@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<Triangle*> getTriangleSides(vector<int>& segments) {
+        vector<Triangle*> ret;
+        if (segments.size() < 3) return ret;
+        sort(segments.begin(), segments.end());
+        for(int i = segments.size() - 1; i >= 2; i--) {
+            int p = 0, q = i - 1;
+            while(p < q){
+                if (isTriangle(segments[p], segments[q], segments[i])) {
+                    string key = to_string(segments[p]) + ","+ to_string(segments[q]) +"," + to_string(segments[i]);
+                    if (mapping.find(key) == mapping.end()) {
+                        Triangle* newNode = new Triangle(segments[p], segments[q], segments[i]);
+                        ret.push_back(newNode);
+                        mapping[key] = ret.size() - 1;
+                    }
+                    q--;
+                }
+                else p++;
+            }
+        }
+        return ret;
+    }
+    bool isTriangle(int a, int b, int c) {
+        return a + b > c;
+    }
+    unordered_map<string, int> mapping;
+};
