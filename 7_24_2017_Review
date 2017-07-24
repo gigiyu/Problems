@@ -131,3 +131,148 @@ public:
         
     }
 };
+
+
+/****************************************************************************
+80. K closest values in BST
+Solution: 1.inorder get nums; 2.search k closest{left, idx, right} keep them in [0, nums.size() - 1]
+Follow up:
+    - Assume that the BST is balanced, could you solve it in less than O(n) runtime (where n = total nodes)?
+*/
+class Solution80 {
+public:
+    // 1. find one closet number in BST
+    int closestValue(TreeNode* root, double target) {
+        int ret = root->val;
+        {   // iterate
+            while (root) {
+                if (abs(root->val - target)<abs(ret - target)) ret = root->val;
+                root = target < root->val ? root->left : root->right;
+            }
+            return ret;
+        }
+        {   // recursive
+            TreeNode* next = target < root->val ? root->left : root->right;
+            if (next == nullptr) return ret;
+            int subTree = closestValue(next, target);
+            return abs(ret - target) < abs(subTree - target) ? ret : subTree;
+        }
+
+    }
+    // 2. find K
+    vector<int> closestKValues(TreeNode* root, double target, int k) {
+        //Solution 1:O(n) runtime (where n = total nodes) iterate
+        {
+            vector<int> res, v;
+            inorder1(root, v);   // get sorted tree values
+            int idx = 0;
+            double diff = numeric_limits<double>::max();    // get minGap
+            for (int i = 0; i < v.size(); ++i) {
+                if (diff >= abs(target - v[i])) {
+                    diff = abs(target - v[i]);
+                    idx = i;
+                }
+            }
+            int left = idx - 1, right = idx + 1; // keep {left, idx, right} in[0, v.size() - 1];
+            for (int i = 0; i < k; ++i) {
+                res.push_back(v[idx]);
+                if (left >= 0 && right < v.size()) {
+                    if (abs(v[left] - target) > abs(v[right] - target)) {
+                        idx = right;
+                        ++right;
+                    } else {
+                        idx = left;
+                        --left;
+                    }
+                } else if (left >= 0) {
+                    idx = left;
+                    --left;
+                } else if (right < v.size()) {
+                    idx = right;
+                    ++right;
+                }
+            }
+            return res;
+        }
+        // Solution 2: generate KClosest when inorder.
+        {
+            vector<int> res;
+            inorder2(root, target, k, res);
+            return res;
+        }
+        // Solution 3: priority_queue<pair<double, int>> pq;
+        {
+            priority_queue<pair<double, int>> pq;   //pq(double, int)->(gap, root->val);
+            inorder3(root, pq, target, k);
+            vector<int> ret;
+            while(!pq.empty()) {
+                ret.push_back(pq.top().second);
+                pq.pop();
+            }
+            return ret;
+        }
+        // Solution 3: two stack(pre, suc) O(k)
+        {
+            vector<int> res;
+            stack<TreeNode*> pre, suc;
+            while (root) {
+                if (root->val <= target) {
+                    pre.push(root);
+                    root = root->right;
+                } else {
+                    suc.push(root);
+                    root = root->left;
+                }
+            }
+            while (k-- > 0) {
+                if (suc.empty() || !pre.empty() && target - pre.top()->val < suc.top()->val - target) {
+                    res.push_back(pre.top()->val);
+                    getPredecessor(pre);
+                } else {
+                    res.push_back(suc.top()->val);
+                    getSuccessor(suc);
+                }
+            }
+            return res;
+        }
+    }
+    void getPredecessor(stack<TreeNode*> &pre) {
+        TreeNode *t = pre.top(); pre.pop();
+        if (t->left) {
+            pre.push(t->left);
+            while (pre.top()->right) pre.push(pre.top()->right);
+        }
+    }
+    void getSuccessor(stack<TreeNode*> &suc) {
+        TreeNode *t = suc.top(); suc.pop();
+        if (t->right) {
+            suc.push(t->right);
+            while (suc.top()->left) suc.push(suc.top()->left);
+        }
+    }
+    void inorder3(TreeNode* root, priority_queue<pair<double, int>>& pq, double target, int k) {
+        if (!root) return;
+        inorder3(root->left, pq, target, k);
+        pq.push({abs(root->val - target), root->val});
+        if(pq.size() > k) pq.pop();
+        inorder3(root->right, pq, target, k);
+    }
+    void inorder2(TreeNode *root, double target, int k, vector<int> &res) {
+        if (!root) return;
+        inorder2(root->left, target, k, res);
+        if (res.size() < k) res.push_back(root->val);
+        else if (abs(root->val - target) < abs(res[0] - target)) {
+            res.erase(res.begin());
+            res.push_back(root->val);
+        } else return;
+        inorder2(root->right, target, k, res);
+    }
+    void inorder1(TreeNode* root, vector<int>& nums) {
+        if (root == nullptr) return;
+        inorder1(root->left, nums);
+        nums.push_back(root->val);
+        inorder1(root->right, nums);
+    }
+};
+
+
