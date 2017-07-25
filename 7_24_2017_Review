@@ -4,12 +4,13 @@
 ["abc"]->{"abc","acb","bac","bca","cab","cba"}
 Follow up:
     - utilize multithreading
-    - hwo wo avoid using a ridiculously large amount of memory?
+    - how to avoid using a ridiculously large amount of memory?
 */
 template<typename T>
 class Solution {
 public:
     vector<vector<T>> generatePermutation(vector<T> values) {
+        ret.clear();
         if (values.size() == 0) return ret;
         vector<T> path;
         vector<bool> mark(values.size(), false);
