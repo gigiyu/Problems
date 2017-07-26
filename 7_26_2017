@@ -1,0 +1,40 @@
+/****************************************************************************
+16. Isomorphic Strings (LeetCode205)
+"egg", "add"-> true; "foo", "bar" -> false;
+Follow up:
+    - what if there were three words? 
+    - what if there were n words?
+    - What is the execution time complexity? Can you make it faster?
+*/
+class Solution {
+public:
+    //vector<string> words = {"foo", "bar", "baz", "qux", "oof", "aaa", "aah", "abb", "aba"};
+    // output = {{aaa}, {aba}, {abb,foo},{bar,qux,baz},{oof,aah}}
+    vector<vector<string>> isIsomorphic_N(vector<string>& words) {
+        vector<vector<string>> ret;
+        if (words.size() == 0) return ret;
+        unordered_map<string, vector<string>> m;    //<"format", word>
+        for(int i = 0; i < words.size(); i++) {
+            string f = formatting(words[i]);
+            m[f].push_back(words[i]);
+        }
+        for(auto it = m.begin(); it != m.end(); it++) {
+            ret.push_back(it->second);
+        }
+        return ret;
+    }
+    string formatting(const string& s) {
+        string ret;
+        unordered_map<char, char> m;
+        char c = 'a';
+        for(int i = 0; i < s.size(); i++) {
+            if (m.find(s[i]) == m.end()) {
+                m[s[i]] = c++;
+            }
+            ret += m[s[i]];
+        }
+        return ret;
+    }
+};
+
+
