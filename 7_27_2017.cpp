@@ -38,3 +38,24 @@ public:
         return ret;
     }
 };
+
+
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int v) : data(v), left(nullptr), right(nullptr) {};
+};
+
+class BinaryTree {
+    Node* root;
+public:
+    void serialize(ostream& os) {
+        if ()
+    }
+
+    BinaryTree deserialize(istream& is) {
+
+    }
+};
