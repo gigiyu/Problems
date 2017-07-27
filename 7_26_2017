@@ -37,4 +37,44 @@ public:
     }
 };
 
-
+/****************************************************************************
+23. Data struct with O(1) add, remove, randomremove
+Follow up:
+    - use Set, Insert, Remove, GetRandom O(1)   //TODO
+    - add(T val), remove(T val), T removeRandomeElement all O(1) + template   //TODO
+    - TODO
+duplicated allowed
+*/
+template<typename T>
+class RandomizedCollection {
+public:
+    bool add(T element) {
+        if (m.find(element) != m.end()) return false;
+        m[element] = v.size();
+        v.push_back(element);
+        return true;
+    }
+    bool remove(T element) {
+        if (m.find(element) == m.end()) return false;
+        int idx1 = m[element];
+        int idx2 = v.size() - 1;
+        removeHelper(idx1, idx2);
+        return true;
+    }
+    T removeRandomElement() {
+        int idx1 = rand() % v.size();
+        T ret = v[idx1];
+        int idx2 = v.size() - 1;
+        removeHelper(idx1, idx2);
+        return ret;
+    }
+private:
+    unordered_map<T, int> m;
+    vector<T> v;
+    void removeHelper(int idx1, int idx2) {
+        m[v[idx2]] = idx1;
+        m.erase(v[idx1]);
+        swap(v[idx1], v[idx2]);
+        v.pop_back();
+    }
+};
