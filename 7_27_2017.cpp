@@ -39,23 +39,56 @@ public:
     }
 };
 
-
-class Node {
-public:
-    int data;
-    Node* left;
-    Node* right;
-    Node(int v) : data(v), left(nullptr), right(nullptr) {};
-};
-
 class BinaryTree {
-    Node* root;
 public:
+    TreeNode* root;
     void serialize(ostream& os) {
-        if ()
+        mySerialize(os, root);
+    }
+
+    void mySerialize(ostream& os, TreeNode* root) {
+        if (root == nullptr) {
+            os << "# ";
+            return;
+        }
+        os << root->val << " ";
+        mySerialize(os, root->left);
+        mySerialize(os, root->right);
     }
 
     BinaryTree deserialize(istream& is) {
-
+        BinaryTree ret;
+        ret.root = myDeserialize(is);
+        return ret;
     }
+    TreeNode* generateTree(string input) {
+        Codec c;
+        root = c.deserialize(input);
+    }
+    TreeNode* myDeserialize(istream& is) {
+        while(!is.eof()) {
+            string word;
+            is >> word;
+            if (word == "#") return nullptr;
+            TreeNode* root = new TreeNode(stoi(word));
+            root->left = myDeserialize(is);
+            root->right = myDeserialize(is);
+            return root;
+        }
+    }
+};
+int main() {
+     string input = "1,2,4,#,#,#,3,#,7,#,#";
+     BinaryTree bt;
+     bt.generateTree(input);
+     filebuf f;
+     f.open("in.txt", ios::out);
+     ostream os(&f);
+     bt.serialize(os);
+     f.close();
+     f.open("in.txt", ios::in);
+     istream in(&f);
+     auto tree = bt.deserialize(in);
+     Codec c;
+     cout << c.serialize(tree.root) << endl;
 };
