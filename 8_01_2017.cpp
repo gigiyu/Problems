@@ -45,7 +45,36 @@ public:
         return false;
     }
 };
-
+class Divisible {
+public:
+    //[4,3,2,3,5,2,1], k=4 -> (5)(1,4)(2,3)(2,3)
+    // only calculate number of subset.
+    bool divisible(const vector<int>& nums, int k) {
+        int total = accumulate(nums.begin(), nums.end(), 0);
+        if (total % k) return false;
+        int target = total / k;
+        vector<int> mark(nums.size(), 0);
+        int ret = 0;
+        for(int i = 0; i < nums.size(); i++) {
+             if (mark[i] == 0) {
+                if (dfs(nums, target, 0, mark))  ret++;
+             }
+        }
+        return ret == k;
+    }
+    bool dfs(const vector<int>& nums, int target, int sum, vector<int>& mark) {
+        if (sum == target) return true;
+        if (sum > target) return false;
+        for(int i = 0; i < nums.size(); i++) {
+            if (mark[i] == 0) {
+                mark[i] = 1;
+                if (dfs(nums, target, sum + nums[i], mark)) return true;
+                mark[i] = 0;
+            }
+        }
+        return false;
+    }
+};
 
 /****************************************************************************
 41. Intersection and Union of sorted lists
