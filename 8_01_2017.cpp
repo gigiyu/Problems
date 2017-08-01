@@ -60,6 +60,13 @@ public:
         for(int i = 0; i < nums.size(); i++) {
              if (mark[i] == 0) {
                 if (dfs(nums, target, 0, mark, 0))  ret++;
+                if (target == 0 && ret + 1 == k) {
+                    int tmp = 0;
+                    for(int i = 0; i < nums.size(); i++){
+                        if (mark[i] == 0) tmp += nums[i];
+                    }
+                    if (tmp == target) return true;
+                }
              }
         }
         for(auto n : mark) if (n == 0) return false;
