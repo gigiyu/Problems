@@ -1,3 +1,61 @@
+/****************************************************************************
+42. Array Equal Partition
+Given an array with random number, given a parameterk, determine whether it is possible to divide the array into k sub arrays,
+whose sums are equivalent to each other.
+[4,3,2,3,5,2,1], k=4 -> (5)(1,4)(2,3)(2,3)
+[2,1,6,3,7,-1]
+*/
+class Divisible {
+public:
+    //[4,3,2,3,5,2,1], k=4 -> (5)(1,4)(2,3)(2,3)
+    bool divisible(const vector<int>& nums, int k) {
+        int total = accumulate(nums.begin(), nums.end(), 0);
+        if (total % k) return false;
+        int target = total / k;
+        vector<int> mark(nums.size(), 0);
+        vector<vector<int>> ret;
+        vector<int> path;
+        for(int i = 0; i < nums.size(); i++) {
+             if (mark[i] == 0) {
+                if (dfs(nums, k, target, ret, path, 0, mark, i)) {
+                    ret.push_back(path);
+                    path.clear();
+                }
+             }
+        }
+        show(ret);
+        return ret.size() == k;
+    }
+    bool dfs(const vector<int>& nums, int k, int target, vector<vector<int>>& ret, vector<int>& path, int sum, vector<int>& mark, int idx) {
+        if (sum == target){
+            return true;
+        }
+        if (sum > target) return false;
+        for(int i = idx; i < nums.size(); i++) {
+            if (mark[i] == 0) {
+                mark[i] = 1;
+                path.push_back(nums[i]);
+                if (dfs(nums, k, target, ret, path, sum + nums[i], mark, i)) {
+                    return true;
+                }
+                mark[i] = 0;
+                path.pop_back();
+            }
+        }
+        return false;
+    }
+};
+
+
+/****************************************************************************
+41. Intersection and Union of sorted lists
+A={2,4,6,8,10}, B={1,2,3,4,5} A Union B={1,2,3,4,5,6,8,10};  A Intersection B={2,4}
+Follow up:
+    - what if input may have duplicates, but the result of the intersection or union must not
+    - Multiple lists
+    - multiple CPU cores? concurrency? (Why your solution works.)
+    - When does it make sense to do this sort of optimization? Does it depend on length of the lists, number of processor cores?  
+*/
 class IntersectionAndUnion {
 public:
     vector<int> Union(const vector<int>& a, const vector<int>& b) {
