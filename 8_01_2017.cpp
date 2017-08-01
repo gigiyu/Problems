@@ -8,6 +8,7 @@ whose sums are equivalent to each other.
 class Divisible {
 public:
     //[4,3,2,3,5,2,1], k=4 -> (5)(1,4)(2,3)(2,3)
+    // {-1, 1, 10, -10, 100, -100} k = 3;
     bool divisible(const vector<int>& nums, int k) {
         int total = accumulate(nums.begin(), nums.end(), 0);
         if (total % k) return false;
@@ -24,13 +25,14 @@ public:
              }
         }
         show(ret);
+        for(auto n : mark) if (n == 0) return false;
         return ret.size() == k;
     }
     bool dfs(const vector<int>& nums, int k, int target, vector<vector<int>>& ret, vector<int>& path, int sum, vector<int>& mark, int idx) {
-        if (sum == target){
+        if (sum == target && path.size() > 0){
             return true;
         }
-        if (sum > target) return false;
+        // if (sum > target) return false; //  no need this. eg. target=0 [1,-1,2,-2] k = 2;
         for(int i = idx; i < nums.size(); i++) {
             if (mark[i] == 0) {
                 mark[i] = 1;
@@ -57,18 +59,19 @@ public:
         int ret = 0;
         for(int i = 0; i < nums.size(); i++) {
              if (mark[i] == 0) {
-                if (dfs(nums, target, 0, mark))  ret++;
+                if (dfs(nums, target, 0, mark, 0))  ret++;
              }
         }
+        for(auto n : mark) if (n == 0) return false;
         return ret == k;
     }
-    bool dfs(const vector<int>& nums, int target, int sum, vector<int>& mark) {
-        if (sum == target) return true;
-        if (sum > target) return false;
+    bool dfs(const vector<int>& nums, int target, int sum, vector<int>& mark, int cnt) {
+        if (sum == target && cnt > 0) return true;
+        //if (sum > target) return false;
         for(int i = 0; i < nums.size(); i++) {
             if (mark[i] == 0) {
                 mark[i] = 1;
-                if (dfs(nums, target, sum + nums[i], mark)) return true;
+                if (dfs(nums, target, sum + nums[i], mark, cnt + 1)) return true;
                 mark[i] = 0;
             }
         }
