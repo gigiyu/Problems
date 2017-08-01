@@ -55,16 +55,16 @@ public:
         }
         return ret;
     }
-    // TODO
     // parallelize
     vector<int> Union_Parallelize(const vector<int>& a, const vector<int>& b) {
-        vector<int> a1(a.begin(), a.begin() + a.size() / 2);
-        vector<int> a2(a.begin() + a.size() / 2 + 1, a.end());
+        vector<int> a1(a.begin(), a.begin() + a.size() / 2); // divide into two part.
+        vector<int> a2(a.begin() + a.size() / 2, a.end());
         vector<int> b1(b.begin(), b.begin() + b.size() / 2);
-        vector<int> b2(b.begin() + b.size() / 2 + 1, b.end());
-
-        auto tmp1 = std::async(&Union, ref(a1), ref(b1)); // error
-        auto tmp2 = std::async(&Union, ref(a2), ref(b2)); // error
+        vector<int> b2(b.begin() + b.size() / 2, b.end());
+        // &IntersectionAndUnion::Union,
+        // this
+        auto tmp1 = std::async(&IntersectionAndUnion::Union, this, ref(a1), ref(b1));
+        auto tmp2 = std::async(&IntersectionAndUnion::Union, this, ref(a2), ref(b2));
 
         return Union(tmp1.get(), tmp2.get());
 
