@@ -1,4 +1,55 @@
 /****************************************************************************
+43. Function Time
+*/
+struct FunInfo {
+    string name;
+    string status;
+    int time;
+    FunInfo(string n, string s, int t) : name(n), status(s), time(t) {}
+};
+
+class FuntionTime {
+public:
+    // "fun1:start:0"
+    vector<int> funcTime(vector<string>& input, string jobName) {
+        if (input.empty() || jobName.empty()) throw invalid_argument("Error");
+        vector<int> ret(2, 0);
+        vector<FunInfo> funLists = deserilizeFun(input);
+        stack<FunInfo> st;
+        int subFunTime = 0;
+        for(auto f : funLists) {
+            cout << f.name << " " << f.status << " " << f.time << endl;
+            if (st.empty()) {
+                if (f.name == jobName && f.status == "start") st.push(f);
+            } else {
+                if (f.name == jobName) {
+                    FunInfo top = st.top(); st.pop();
+                    ret[0] += f.time - top.time;
+                    ret[1] += ret[0] - subFunTime;
+                    subFunTime = 0;
+                }else {
+                    if (f.status == "start") st.push(f);
+                    else {
+                        FunInfo top = st.top(); st.pop();
+                        subFunTime += f.time - top.time;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    vector<FunInfo> deserilizeFun(vector<string>& input) {
+        vector<FunInfo> ret;
+        for(auto s : input) {
+            size_t idx1 = s.find(':');
+            size_t idx2 = s.find(':', idx1 + 1);
+            FunInfo f(s.substr(0, idx1), s.substr(idx1+1, idx2 - idx1 - 1), stoi(s.substr(idx2 + 1)));
+            ret.push_back(f);
+        }
+        return ret;
+    }
+};
+/****************************************************************************
 42. Array Equal Partition
 Given an array with random number, given a parameterk, determine whether it is possible to divide the array into k sub arrays,
 whose sums are equivalent to each other.
