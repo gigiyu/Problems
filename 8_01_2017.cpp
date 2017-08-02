@@ -1,4 +1,54 @@
 /****************************************************************************
+44. Connected Components in an undirected graph
+Given an undirected graph, find the number of connected components.
+Union Find
+*/
+class Graph {
+public:
+    int connectedComponents(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> graph(n);
+        for(int i = 0; i < edges.size(); i++) {
+            int a = edges[i][0];
+            int b = edges[i][1];
+            graph[a].push_back(b);
+            graph[b].push_back(a);
+        }
+        vector<int> visited(n, 0);
+        int ret = 0;
+        for(int i = 0; i < n; i++) {
+            if (visited[i] == 0){
+                dfs(n, graph, visited, i);
+                ret++;
+            }
+        }
+        return ret;
+    }
+    void dfs(int n, vector<vector<int>>& graph, vector<int>& visited, int idx) {
+        if (visited[idx]) return;
+        visited[idx] = 1;
+        for(int i = 0; i < graph[idx].size(); i++) {
+            dfs(n, graph, visited, graph[idx][i]);
+        }
+    }
+    int unionFindSets(int n, vector<vector<int>>& edges) {
+        vector<int> p(n, -1);
+        for(auto e : edges) {
+            int x = findRoot(p, e[0]);
+            int y = findRoot(p, e[1]);
+            if (x == y) continue;
+            p[y] = x;
+            showV(p);
+        }
+        int ans = 0;
+        for(auto n : p) if (n == -1) ans++;
+        return ans;
+    }
+    int findRoot(vector<int>& p, int i) {
+        return p[i] < 0 ? i : (i = findRoot(p, p[i]));
+    }
+};
+
+/****************************************************************************
 43. Function Time
 */
 struct FunInfo {
